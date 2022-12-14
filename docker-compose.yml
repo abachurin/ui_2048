@@ -1,0 +1,10 @@
+services:
+
+  dash:
+    build: .
+    container_name: ui-2048
+    restart: always
+    environment:
+      - APP_NAME=ui-2048
+    ports:
+      - "5000:5000"
