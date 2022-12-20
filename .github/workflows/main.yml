@@ -34,7 +34,7 @@ jobs:
       with:
         context: .
         tags: abachurin/ui_2048:latest
-        platforms: linux/arm/v8
+        platforms: linux/arm64/v8
         push: true
 #      run: docker buildx build -t $USER/$REPO:latest --platform linux/arm/v8
 #      run: docker build . -t $USER/$REPO:latest --platform linux/arm64/v8
