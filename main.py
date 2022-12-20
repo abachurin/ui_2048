@@ -21,7 +21,7 @@ def get_square(n):
     if n:
         payload = {}
         headers = {}
-        url = f'{BACK_URL}/users/list'
+        url = f'{ROOT_URL}/users/list'
         response = requests.request('GET', url, headers=headers, data=payload)
         if response.status_code != 200:
             return 'Unable to connect'
