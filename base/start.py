@@ -140,14 +140,10 @@ if LOCAL == 'local':
 else:
     BACK_URL = os.environ.get('ROOT_URL', 'http://host.docker.internal:5000')
 
-if LOCAL == 'local':
-    with open(CONF['s3_credentials'], 'r') as f:
-        s3_credentials = json.load(f)
-else:
-    s3_credentials = {
-        'region': os.environ.get('S3_REGION', None),
-        'access_key': os.environ.get('S3_ACCESS_KEY', None),
-        'secret_key': os.environ.get('S3_SECRET_KEY', None)
-    }
+s3_credentials = {
+    'region': os.environ.get('S3_REGION', None),
+    'access_key': os.environ.get('S3_ACCESS_KEY', None),
+    'secret_key': os.environ.get('S3_SECRET_KEY', None)
+}
 
 S3 = Storage(s3_credentials)
