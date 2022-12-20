@@ -138,7 +138,7 @@ LOCAL = os.environ.get('S3_URL', 'local')
 if LOCAL == 'local':
     BACK_URL = 'http://localhost:5000'
 else:
-    BACK_URL = os.environ.get('ROOT_URL', 'http://host.docker.internal:5000')
+    BACK_URL = os.environ.get('ROOT_URL', 'http://localhost:5000')
 
 s3_credentials = {
     'region': os.environ.get('S3_REGION', None),
