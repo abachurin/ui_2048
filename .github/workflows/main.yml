@@ -37,7 +37,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        tags: abachurin/back_2048:latest
+        tags: abachurin/ui_2048:latest
         platforms: linux/arm/v8
         push: true
 #      run: docker buildx build -t $USER/$REPO:latest --platform linux/arm/v8
