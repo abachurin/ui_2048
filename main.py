@@ -23,7 +23,8 @@ def get_square(n):
         headers = {}
         url = f'{BACK_URL}/users/list'
         response = requests.request('GET', url, headers=headers, data=payload)
-        pprint(response)
+        if response.status_code != 200:
+            return 'Unable to connect'
         return json.loads(response.text).get('user_list', 'None')
     else:
         raise PreventUpdate
