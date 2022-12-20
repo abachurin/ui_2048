@@ -138,7 +138,7 @@ LOCAL = os.environ.get('S3_URL', 'local')
 if LOCAL == 'local':
     ROOT_URL = 'http://localhost:5000'
 else:
-    ROOT_URL = 'back_2048:5000'
+    ROOT_URL = 'http://back:5000'
 
 s3_credentials = {
     'region': os.environ.get('S3_REGION', None),
