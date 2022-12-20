@@ -2,6 +2,10 @@
 
 name: Build container on my Docker Hub
 
+env:
+  USER: "abachurin"
+  REPO: "ui_2048"
+
 on:
   pull_request:
     branches:
@@ -11,11 +15,11 @@ on:
       - master
 
 jobs:
-  build-and-deploy-ui:
-    name: Build and Deploy UI
+  build-and-deploy-back:
+    name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: Check out the repo
       uses: actions/checkout@v3
 
     - name: Log in to Docker Hub
@@ -24,14 +28,8 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PWD }}
 
-#    - name: Build and push Docker image
-#      uses: docker/build-push-action@v5
-#      with:
-#        username: ${{ secrets.DOCKER_USERNAME }}
-#        password: ${{ secrets.DOCKER_PWD }}
-#        repository: .
-#        dockerfile: Dockerfile
-#        tags: latest
-#
-#    - name: Message about CD
-#      run: echo "CD pipeline = success"
+    - name: Build the Docker image
+      run: docker build . -t $USER/$REPO:latest
+
+    - name: Push to Docker Hub
+      run: docker push $USER/$REPO:latest

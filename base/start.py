@@ -20,10 +20,113 @@ import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import DashProxy, MultiplexerTransform, Output, Input, State
 
+
+def full_s3_key(name, folder):
+    return f'{folder}/{name}' if folder else name
+
+
+def core_s3_key(name):
+    return name.split('/')[-1]
+
+
+def time_suffix(precision=1):
+    return ''.join([v for v in str(datetime.utcnow()) if v.isnumeric()])[4:-precision]
+
+
+def temp_local(name):
+    body, ext = name.split('.')
+    return f'temp{time_suffix()}.{ext}', ext
+
+
+def clock():
+    return datetime.now().strftime('%H:%M:%S')
+
+
+class Storage:
+
+    def __init__(self, credentials=None, space='robot-2048'):
+        if credentials is not None:
+            self.engine = boto3.resource(
+                service_name='s3',
+                endpoint_url=f'https://{credentials["region"]}.digitaloceanspaces.com',
+                region_name=credentials['region'],
+                aws_access_key_id=credentials['access_key'],
+                aws_secret_access_key=credentials['secret_key']
+            )
+        else:
+            self.engine = boto3.resource('s3')
+        self.space = self.engine.Bucket(space)
+        self.space_name = space
+
+    def list_files(self, folder=None):
+        files = [o.key for o in self.space.objects.all()]
+        if folder:
+            return [f for f in files if (f.startswith(f'{folder}/') and f != f'{folder}/')]
+        else:
+            return files
+
+    def delete(self, name, folder=None):
+        name = full_s3_key(name, folder)
+        if name in self.list_files():
+            self.engine.Object(self.space_name, name).delete()
+
+    def copy(self, src, dst):
+        self.space.copy({'Bucket': self.space_name, 'Key': src}, dst)
+
+    def save_file(self, file, name, folder=None):
+        self.space.upload_file(file, full_s3_key(name, folder))
+
+    def save(self, data, name, folder=None):
+        temp, ext = temp_local(name)
+        with open(temp, 'w') as f:
+            match ext:
+                case 'json':
+                    json.dump(data, f)
+                case 'txt':
+                    f.write(data)
+                case 'pkl':
+                    pickle.dump(data, f, -1)
+                case _:
+                    return
+        self.save_file(temp, name, folder)
+        os.remove(temp)
+
+    def load(self, name, folder=None):
+        full = full_s3_key(name, folder)
+        if full not in self.list_files():
+            return
+        temp, ext = temp_local(name)
+        self.space.download_file(full, temp)
+        match ext:
+            case 'json':
+                with open(temp, 'r', encoding='utf-8') as f:
+                    result = json.load(f)
+            case 'txt':
+                with open(temp, 'r') as f:
+                    result = f.read()
+            case 'pkl':
+                with open(temp, 'rb') as f:
+                    result = pickle.load(f)
+            case _:
+                result = None
+        os.remove(temp)
+        return result
+
+    def add_to_memo(self, text):
+        memo = self.load('memory_usage.txt') or ''
+        self.save(memo + text + '\n', 'memory_usage.txt')
+
+    def add_log(self, text, user):
+        log_file = f'logs_{user}'
+        if text:
+            memo = self.load(log_file, 'user_logs') or ''
+            memo += text + '\n'
+            self.save(memo, log_file, 'user_logs')
+
+
 working_directory = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(working_directory, 'config.json'), 'r') as f:
     CONF = json.load(f)
-LOCAL = os.environ.get('S3_URL', 'local')
 dash_intervals = CONF['intervals']
 dash_intervals['refresh'] = dash_intervals['refresh_sec'] * 1000
 dash_intervals['check_run'] = dash_intervals['refresh_sec'] * 2
@@ -31,137 +134,20 @@ dash_intervals['vc'] = dash_intervals['vc_sec'] * 1000
 dash_intervals['next'] = dash_intervals['refresh_sec'] + 180
 LOWEST_SPEED = 50
 
-GAME_PANE = {}
-AGENT_PANE = {}
-RUNNING = {}
-
-s3_bucket_name = 'ab2048'
+LOCAL = os.environ.get('S3_URL', 'local')
 if LOCAL == 'local':
-    # s3_credentials = CONF['s3_credentials']
-    # with open(s3_credentials, 'r') as f:
-    #     df = json.load(f)
-    df = {
-        "access_key": "DO008LH26FPAYPZWQJMM",
-        "secret_key": "U9yJSnM7ssd1DPSIFGGPtr7IGu7sWmXeZqwMVKiOg3A",
-        "token": "dop_v1_2d61a28ae4edf1a4a2dd30d276ebc938b2ca8572a72469967178f4e894d2f170"
-    }
-    s3_engine = boto3.resource(
-        service_name='s3',
-        region_name='eu-west-1',
-        aws_access_key_id=df['access_key'],
-        aws_secret_access_key=df['secret_key']
-    )
-    s3_bucket = s3_engine.Bucket(s3_bucket_name)
-elif LOCAL == 'AWS':
-    s3_engine = boto3.resource('s3')
-    s3_bucket = s3_engine.Bucket(s3_bucket_name)
-    LOWEST_SPEED = 100
+    BACK_URL = 'http://localhost:5000'
 else:
-    print('Unknown environment. Only show.py script is functional here. Check "Environment" notes in readme.md file')
+    BACK_URL = os.environ.get('ROOT_URL', 'http://host.docker.internal:5000')
 
-
-def time_suffix(precision=1):
-    return ''.join([v for v in str(datetime.utcnow()) if v.isnumeric()])[4:-precision]
-
-
-def next_time():
-    return str(datetime.utcnow() + timedelta(seconds=dash_intervals['next']))
-
-
-def temp_local_name(name):
-    body, ext = name.split('.')
-    return f'temp{time_suffix()}.{ext}', ext
-
-
-def list_names_s3():
-    return [o.key for o in s3_bucket.objects.all()]
-
-
-def is_data_there(name):
-    return name in list_names_s3()
-
-
-def copy_inside_s3(src, dst):
-    s3_bucket.copy({'Bucket': s3_bucket_name, 'Key': src}, dst)
-
-
-def delete_s3(name):
-    if is_data_there(name):
-        s3_engine.Object(s3_bucket_name, name).delete()
-
-
-def load_s3(name):
-    if not name or (not is_data_there(name)):
-        return
-    temp, ext = temp_local_name(name)
-    s3_bucket.download_file(name, temp)
-    if ext == 'json':
-        with open(temp, 'r', encoding='utf-8') as f:
-            result = json.load(f)
-    elif ext == 'txt':
-        with open(temp, 'r') as f:
-            result = f.read()
-    elif ext == 'pkl':
-        with open(temp, 'rb') as f:
-            result = pickle.load(f)
-    else:
-        result = None
-    os.remove(temp)
-    return result
-
-
-def save_s3(data, name):
-    temp, ext = temp_local_name(name)
-    if ext == 'json':
-        with open(temp, 'w') as f:
-            json.dump(data, f)
-    elif ext == 'txt':
-        with open(temp, 'w') as f:
-            f.write(data)
-    elif ext == 'pkl':
-        with open(temp, 'wb') as f:
-            pickle.dump(data, f, -1)
-    else:
-        return 0
-    s3_bucket.upload_file(temp, name)
-    os.remove(temp)
-    return 1
-
-
-def add_status(key, value, parent):
-    status: dict = load_s3('status.json')
-    status[key][value] = {
-        'parent': parent,
-        'finish': next_time()
-    }
-    save_s3(status, 'status.json')
-
-
-def memory_usage_line():
-    memo = psutil.virtual_memory()
-    mb = 1 << 20
-    return f'{str(datetime.now())[11:]} | total: {int(memo.total / mb)} | used: {int(memo.used / mb)} | ' \
-           f'available: {int(memo.available / mb)}\n'
-
-
-def add_to_memo(text):
-    memo_text = load_s3('memory_usage.txt')
-    memo_text += text
-    save_s3(memo_text, 'memory_usage.txt')
-
-
-class Logger:
-    msg = {
-        'welcome': "Welcome! Let's do something interesting. Choose MODE of action!",
-        'collapse': 'Current process collapsed!'
+if LOCAL == 'local':
+    with open(CONF['s3_credentials'], 'r') as f:
+        s3_credentials = json.load(f)
+else:
+    s3_credentials = {
+        'region': os.environ.get('S3_REGION', None),
+        'access_key': os.environ.get('S3_ACCESS_KEY', None),
+        'secret_key': os.environ.get('S3_SECRET_KEY', None)
     }
 
-    def __init__(self, log_file):
-        self.file = log_file
-        if self.file not in list_names_s3():
-            save_s3('', self.file)
-
-    def add(self, text):
-        if text:
-            now = load_s3(self.file) or ''
-            save_s3(now + '\n' + str(text), self.file)
+S3 = Storage(s3_credentials)

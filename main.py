@@ -1,48 +1,30 @@
 from base.dash_utils import *
 
 
-LOCAL = os.environ.get('S3_URL', 'local')
-BACK_URL = os.environ.get('ROOT_URL', 'http://host.docker.internal:3000')
-
-
 app = DashProxy(__name__, suppress_callback_exceptions=True,
                 transforms=[MultiplexerTransform()], title='RL Agent 2048', update_title=None,
                 meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1'}])
 application = app.server
 
 app.layout = html.Div([
-    dbc.Input(placeholder='Input number: ', id='input', type='number'),
-    html.Div(id='output'),
-    html.Br(),
-    dbc.Button('List of S3 files = ', id='files', size='large'),
+    dbc.Button('List of S3 files = ', id='get_users', size='large'),
     html.Br(),
     dbc.Textarea(id='list', style={'width': '500px', 'height': '200px', 'border': '2px solid'})
 ])
 
 
 @app.callback(
-    Output('output', 'children'),
-    Input('input', 'value')
-)
-def get_square(n):
-    payload = {}
-    headers = {}
-    url = f'{BACK_URL}/test/{n}'
-    response = requests.request('GET', url, headers=headers, data=payload)
-    return json.loads(response.text).get('value', 'None')
-
-
-@app.callback(
     Output('list', 'value'),
-    Input('files', 'n_clicks')
+    Input('get_users', 'n_clicks')
 )
 def get_square(n):
     if n:
         payload = {}
         headers = {}
-        url = f'{BACK_URL}/files'
+        url = f'{BACK_URL}/users/list'
         response = requests.request('GET', url, headers=headers, data=payload)
-        return json.loads(response.text).get('files', 'None')
+        pprint(response)
+        return json.loads(response.text).get('user_list', 'None')
     else:
         raise PreventUpdate
 

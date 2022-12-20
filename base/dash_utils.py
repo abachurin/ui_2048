@@ -50,19 +50,19 @@ colors = CONF['colors']
 colors = {int(v): colors[v] for v in colors}
 
 
-def display_table(row, score, odo, next_move, self_play=False):
-    header = f'Score = {score}    Moves = {odo}    '
-    if next_move == -1:
-        header += 'Game over!'
-    elif not self_play:
-        header += f'Next move = {Game.actions[next_move]}'
-    return dbc.Card([
-        html.H6(header, className='game-header'),
-        dbc.CardBody([html.Div(numbers[row[j, i]], className='cell',
-                               style={'left': x_position[i], 'top': y_position[j], 'background': colors[row[j, i]]})
-                      for j in range(4) for i in range(4)])
-        ], style={'width': '400px'}
-    )
+# def display_table(row, score, odo, next_move, self_play=False):
+#     header = f'Score = {score}    Moves = {odo}    '
+#     if next_move == -1:
+#         header += 'Game over!'
+#     elif not self_play:
+#         header += f'Next move = {Game.actions[next_move]}'
+#     return dbc.Card([
+#         html.H6(header, className='game-header'),
+#         dbc.CardBody([html.Div(numbers[row[j, i]], className='cell',
+#                                style={'left': x_position[i], 'top': y_position[j], 'background': colors[row[j, i]]})
+#                       for j in range(4) for i in range(4)])
+#         ], style={'width': '400px'}
+#     )
 
 
 def opt_list(l):
@@ -74,12 +74,12 @@ def my_alert(text, info=False):
                      className='admin-notification')
 
 
-def dash_send(name):
-    temp, _ = temp_local_name(name)
-    s3_bucket.download_file(name, temp)
-    to_send = dcc.send_file(temp)
-    os.remove(temp)
-    return to_send
+# def dash_send(name):
+#     temp, _ = temp_local_name(name)
+#     s3_bucket.download_file(name, temp)
+#     to_send = dcc.send_file(temp)
+#     os.remove(temp)
+#     return to_send
 
 
 def markdown_text(md_file):
