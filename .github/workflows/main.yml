@@ -28,8 +28,14 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PWD }}
 
+    - name: Set up QEMU dependency
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
     - name: Build the Docker image
-      run: docker build . -t $USER/$REPO:latest --platform linux/arm64/v8
+      run: docker buildx build -t $USER/$REPO:latest --platform linux/arm/v8
+#      run: docker build . -t $USER/$REPO:latest --platform linux/arm64/v8
 
     - name: Push to Docker Hub
       run: docker push $USER/$REPO:latest
