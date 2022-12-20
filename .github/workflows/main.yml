@@ -29,7 +29,7 @@ jobs:
         password: ${{ secrets.DOCKER_PWD }}
 
     - name: Build the Docker image
-      run: docker build . -t $USER/$REPO:latest
+      run: docker build . -t $USER/$REPO:latest --platform linux/arm64/v8
 
     - name: Push to Docker Hub
       run: docker push $USER/$REPO:latest
