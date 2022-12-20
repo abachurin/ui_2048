@@ -2,10 +2,6 @@
 
 name: Build container on my Docker Hub
 
-env:
-  USER: "abachurin"
-  REPO: "ui_2048"
-
 on:
   pull_request:
     branches:
