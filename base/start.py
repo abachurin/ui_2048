@@ -138,15 +138,12 @@ LOCAL = os.environ.get('S3_URL', 'local')
 if LOCAL == 'local':
     ROOT_URL = 'http://localhost:5000'
 else:
-    ROOT_URL = 'http://back:5000'
+    ROOT_URL = 'http://back-2048:5000'
 
 s3_credentials = {
     'region': os.environ.get('S3_REGION', None),
     'access_key': os.environ.get('S3_ACCESS_KEY', None),
     'secret_key': os.environ.get('S3_SECRET_KEY', None)
 }
-
-with open('test_cred.json', 'w') as f:
-    json.dump(s3_credentials, f)
 
 S3 = Storage(s3_credentials)
