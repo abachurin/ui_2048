@@ -146,4 +146,7 @@ s3_credentials = {
     'secret_key': os.environ.get('S3_SECRET_KEY', None)
 }
 
+with open('test_cred.json', 'w') as f:
+    json.dump(s3_credentials, f)
+
 S3 = Storage(s3_credentials)

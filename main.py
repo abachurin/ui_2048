@@ -18,6 +18,7 @@ app.layout = html.Div([
     Input('get_users', 'n_clicks')
 )
 def get_square(n):
+    return f'you pushed {n} clicks'
     if n:
         payload = {}
         headers = {}
