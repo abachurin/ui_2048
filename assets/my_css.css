@@ -1,12 +1,50 @@
-@import './bootstrap.css';
+@import './bootstrap.min.css';
+
+/*general styles*/
 
 :root {
+	--app-blue-100: #E6FFFF;
+	--app-blue-150: #4D94FF;
+	--app-blue-200: #1C73C2;
+	--app-blue-300: #004E94;
+	--app-blue-400: blue;
+	--app-orange-100: #FFD1B3;
+	--app-orange-700: #FF6B00;
+	--app-gray-100: #F2F2F2;
+	--app-gray-200: #E5E5E5;
+	--app-gray-300: #A6A6A6;
+	--app-gray-400: #808080;
+	--app-gray-700: #4D4D4D;
+	--app-gray-900: #1A1A1A;
+	--app-pink-400: pink;
+	--app-black: black;
+	--app-white: white;
+	--app-green-200: #66FF66;
+	--slider-left: 35px;
+	--slider-right: 285px;
+	--1-slider-top: 81px;
+	--2-slider-top: 263px;
+	--slider-down: 53px;
     --param-text-len: 145px;
+}
+
+* {
+	font-family: Roboto, sans-serif;
+	color: var(--app-gray-700);
+}
+
+.Select {
+	position: absolute !important;
+}
+
+.Select-control {
+	box-shadow: none !important;
+	background-color: var(--app-gray-100);
 }
 
 .my-header {
     text-align: center;
-    color: var(--bs-yellow);
+    color: var(--app-orange-100);
 }
 
 .log-box {
@@ -26,7 +64,7 @@
     width: 130px;
     top: 10px;
     left: 10px;
-    background: var(--bs-yellow);
+    background: var(--app-orange-100);
     border-radius: 0.25rem;
 }
 
@@ -49,7 +87,7 @@
 	height: 140px;
 	top: 10px;
 	padding: 10px;
-	background: var(--bs-white);
+	background: var(--app-white);
 	border-radius: 0.25rem;
 }
 
@@ -68,7 +106,7 @@
     left: 348px;
     top: 16px;
     text-transform: uppercase;
-    background: var(--bs-yellow);
+    background: var(--app-orange-100);
 }
 
 .admin-notification {
@@ -83,7 +121,7 @@
     position: absolute;
     left: 150px;
     width: calc(100% - 160px);
-    border: 2px solid var(--bs-black);
+    border: 2px solid var(--app-black);
     border-radius: 0rem;
 }
 
@@ -91,8 +129,8 @@
     position: absolute;
     width: 75px;
     height: 36px;
-    background: var(--bs-gray-600);
-    border: 2px solid var(--bs-black);
+    background: var(--app-gray-700);
+    border: 2px solid var(--app-black);
     border-radius: 0rem;
 }
 
@@ -102,7 +140,7 @@
     left: 75px;
     width: calc(100% - 75px);
     height: 36px;
-    border: 2px solid var(--bs-black);
+    border: 2px solid var(--app-black);
     border-radius: 0rem;
 }
 
@@ -118,8 +156,8 @@
     position: absolute;
     top: 10px;
     width: 200px;
-    background: var(--bs-pink);
-    border-radius: 0rem;
+    background: var(--app-green-200);
+    border-radius: 0;
 }
 
 .cell {
@@ -138,7 +176,7 @@
     text-align: center;
     white-space: pre;
     color: white;
-    background: var(--bs-blue);
+    background: var(--app-blue-200);
 }
 
 .gauge-group {
@@ -179,7 +217,7 @@
     position: absolute;
     width: 120px;
     color: white;
-    background: var(--bs-blue);
+    background: var(--app-blue-200);
 }
 
 .pause-button {
@@ -195,13 +233,13 @@
     top: 200px;
     height: calc(100% - 240px);
     width: calc(100% - 20px);
-    background: var(--bs-gray-800);
+    background: var(--app-gray-700);
     border-radius: 0.25rem;
 }
 
 .logs-header {
     text-transform: uppercase;
-    background: var(--bs-blue);
+    background: var(--app-blue-200);
 }
 
 .logs-button {
@@ -214,7 +252,7 @@
 
 .stop-agent {
     right: 270px;
-    background: var(--bs-pink)
+    background: var(--app-green-200)
 }
 
 .logs-download {
@@ -245,36 +283,36 @@
     top: calc(100% - 36px);
     width: 100%;
     height: 36px;
-    background: var(--bs-yellow);
+    background: var(--app-orange-100);
     color: black;
     padding-top: 5px;
     padding-left: 10px;
 }
 
 .params-page {
-    background: var(--bs-blue);
+    background: var(--app-blue-200);
     min-width: 420px;
 }
 
 .params-page-body {
-    background: var(--bs-gray);
+    background: var(--app-gray-700);
 }
 
 .par-input-text {
     width: var(--param-text-len);
-    border: 2px solid var(--bs-black);
+    border: 2px solid var(--app-black);
 }
 
 .par-input-field {
      width: calc(100% - var(--param-text-len));
      padding: 10px;
-     border: 2px solid var(--bs-black);
+     border: 2px solid var(--app-black);
 }
 
 .par-select-field {
      width: calc(100% - var(--param-text-len));
      padding: 10px;
-     border: 2px solid var(--bs-black);
+     border: 2px solid var(--app-black);
 }
 
 .no-border {
@@ -285,7 +323,7 @@
     position: absolute;
     width: var(--param-text-len);
     left: 10px;
-    background: var(--bs-pink);
+    background: var(--app-green-200);
 }
 
 .loader {
@@ -310,7 +348,7 @@
     top: 46px;
     width: 100%;
     height: 84px;
-    background: var(--bs-blue);
+    background: var(--app-blue-200);
 }
 
 .lf-cell {
@@ -320,7 +358,7 @@
     width: calc((100% - 6px) / 3);
     padding: 10px;
     font-size: 16px;
-    border: 1px solid var(--bs-blue);
+    border: 1px solid var(--app-blue-200);
     border-radius: 0rem;
 }
 
@@ -347,16 +385,16 @@
     position: absolute;
     top: 104px;
     width: 120px;
-    background: var(--bs-pink);
-    border-radius: 0rem;
+    background: var(--app-green-200);
+    border-radius: 0;
 }
 
 .replay-game {
     position: absolute;
     top: 10px;
     width: 200px;
-    background: var(--bs-pink);
-    border-radius: 0rem;
+    background: var(--app-green-200);
+    border-radius: 0;
 }
 
 .num-eps {
@@ -369,8 +407,8 @@
     position: absolute;
     padding-left: 10px;
     width: 40px;
-    background: var(--bs-gray-600);
-    border: 2px solid var(--bs-black);
+    background: var(--app-gray-700);
+    border: 2px solid var(--app-black);
     border-radius: 0rem;
 }
 
@@ -380,7 +418,7 @@
     left: 40px;
     width: 80px;
     height: 36px;
-    border: 2px solid var(--bs-black);
+    border: 2px solid var(--app-black);
     border-radius: 0rem;
 }
 
@@ -406,10 +444,38 @@
     z-index: 100;
 }
 
+#user_page {
+	position: absolute;
+	width: 300px;
+	height: 400px;
+	left: calc(50% - 560px);
+	top: 60px;
+}
+
+#user_page_header {
+	height: 36px;
+}
+
+.my-modal {
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 2px 8px 0 rgba(0, 0, 0, 0.15);
+	border-radius: 14px;
+	background-color: var(--app-white);
+	z-index: 1150;
+}
+
+.my-modal-body {
+	position: absolute;
+	left: 5px;
+	top: 56px;
+	height: 100%;
+    background-color: var(--app-gray-700);
+	width: calc(100% - 10px);
+}
+
 .inst-header {
     padding-left: 100px;
-    background:  var(--bs-success);
-    color: var(--bs-white);
+    background:  var(--app-orange-700);
+    color: var(--app-white);
     text-transform: uppercase;
     white-space: pre;
 }
@@ -449,7 +515,7 @@
 
 .restart-play {
     position: absolute;
-    background: var(--bs-yellow);
+    background: var(--app-orange-100);
     color: black;
     width: 200px;
     left: calc(50% - 100px);
@@ -461,5 +527,5 @@
 }
 
 .md_content {
-    white-space: wrap;
+    white-space: pre-wrap;
 }

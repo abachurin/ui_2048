@@ -12,6 +12,7 @@ from dash_extensions import EventListener
 from .start import *
 
 # Some necessary variables and useful functions
+modals_to_drag = ['user_page']
 mode_list = {
     'description_button': ('HELP!', 'Guide'),
     'train_agent_button': ('Train Agent', 'Train Agent'),
@@ -50,19 +51,19 @@ colors = CONF['colors']
 colors = {int(v): colors[v] for v in colors}
 
 
-# def display_table(row, score, odo, next_move, self_play=False):
-#     header = f'Score = {score}    Moves = {odo}    '
-#     if next_move == -1:
-#         header += 'Game over!'
-#     elif not self_play:
-#         header += f'Next move = {Game.actions[next_move]}'
-#     return dbc.Card([
-#         html.H6(header, className='game-header'),
-#         dbc.CardBody([html.Div(numbers[row[j, i]], className='cell',
-#                                style={'left': x_position[i], 'top': y_position[j], 'background': colors[row[j, i]]})
-#                       for j in range(4) for i in range(4)])
-#         ], style={'width': '400px'}
-#     )
+def display_table(row, score, odo, next_move, self_play=False):
+    header = f'Score = {score}    Moves = {odo}    '
+    if next_move == -1:
+        header += 'Game over!'
+    elif not self_play:
+        header += f'Next move = {Game.actions[next_move]}'
+    return dbc.Card([
+        html.H6(header, className='game-header'),
+        dbc.CardBody([html.Div(numbers[row[j, i]], className='cell',
+                               style={'left': x_position[i], 'top': y_position[j], 'background': colors[row[j, i]]})
+                      for j in range(4) for i in range(4)])
+        ], style={'width': '400px'}
+    )
 
 
 def opt_list(l):
